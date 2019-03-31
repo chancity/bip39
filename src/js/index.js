@@ -927,6 +927,17 @@
                     privkey = ethUtil.addHexPrefix(privkey);
                     pubkey = ethUtil.addHexPrefix(pubkey);
                 }
+				if (networks[DOM.network.val()].name == "KIN - Kin") {
+                    var purpose = parseIntNoNaN(DOM.bip44purpose.val(), 44);
+                    var coin = parseIntNoNaN(DOM.bip44coin.val(), 0);
+                    var path = "m/";
+                        path += purpose + "'/";
+                        path += coin + "'/" + index + "'";
+                    var keypair = stellarUtil.getKeypair(path, seed);
+                    indexText = path;
+                    privkey = keypair.secret();
+                    pubkey = address = keypair.publicKey();
+                }
                 // Stellar is different
                 if (networks[DOM.network.val()].name == "XLM - Stellar") {
                     var purpose = parseIntNoNaN(DOM.bip44purpose.val(), 44);
@@ -1128,7 +1139,7 @@
             var option = $("<option>");
             option.attr("value", i);
             option.text(network.name);
-            if (network.name == "BTC - Bitcoin") {
+            if (network.name == "KIN - Kin") {
                 option.prop("selected", true);
             }
             DOM.phraseNetwork.append(option);
@@ -1485,7 +1496,7 @@
 
     function networkHasSegwit() {
         var n = network;
-        if ("baseNetwork" in network) {
+        if (network && "baseNetwork" in network) {
             n = bitcoinjs.bitcoin.networks[network.baseNetwork];
         }
         // check if only p2wpkh params are required
@@ -1497,7 +1508,7 @@
             return "p2wpkhInP2sh" in n;
         }
         // require both if it's unclear which params are required
-        return "p2wpkh" in n && "p2wpkhInP2sh" in n;
+        return n && "p2wpkh" in n && "p2wpkhInP2sh" in n;
     }
 
     function bip49TabSelected() {
@@ -1544,7 +1555,7 @@
         var segwitNetworks = null;
         // if a segwit network is alread selected, need to use base network to
         // look up new parameters
-        if ("baseNetwork" in network) {
+        if (network && "baseNetwork" in network) {
             network = bitcoinjs.bitcoin.networks[network.baseNetwork];
         }
         // choose the right segwit params
@@ -1720,7 +1731,7 @@
                 network = bitcoinjs.bitcoin.networks.blocknode;
                 setHdCoin(2941);
             },
-        },	
+        },
 		{
             name: "tBND - Blocknode Testnet",
             onSelect: function() {
@@ -2590,6 +2601,14 @@
             onSelect: function() {
                 network = bitcoinjs.bitcoin.networks.bitcoinplus;
                 setHdCoin(65);
+            },
+        },
+		{
+            name: "KIN - Kin",
+            onSelect: function() {
+                segwitAvailable: false,
+                network = null;
+                setHdCoin(2017);
             },
         },
         {

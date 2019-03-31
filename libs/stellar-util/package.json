@@ -6,6 +6,8 @@
   },
   "dependencies": {
     "ed25519-hd-key": "^1.0.0",
+    "node-gyp": "^3.8.0",
+    "rebuild": "^0.1.2",
     "stellar-base": "^0.10.0"
   },
   "devDependencies": {
